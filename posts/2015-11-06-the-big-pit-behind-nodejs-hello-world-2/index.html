@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Node.js之HelloWorld背后的大坑2 | Venson</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Node.js" />
+  
+  
+  
+  
+  <meta name="description" content="填坑    上一篇文章留了个扣子，本来不想继续写的，因为这样写实在是又累又耗时间。而且中间Node.js还发布了v4.0.0版本，一下子没动力了有木有，人家v4.0.0都发布了，我还分析v0.12.7干吗？于是便在这段时间写了两篇自我感觉良好的小文，奈何文笔太差，完全没人看。倍受打击之余，默默的在多看上买了一套《诺贝尔文学奖作品典藏书系（共28册）》，至今还躺在书架上供每日瞻仰使用。还是多写技术文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Node.js之HelloWorld背后的大坑2">
+<meta property="og:url" content="http://guowensheng.com/posts/2015-11-06-the-big-pit-behind-nodejs-hello-world-2/index.html">
+<meta property="og:site_name" content="Venson">
+<meta property="og:description" content="填坑    上一篇文章留了个扣子，本来不想继续写的，因为这样写实在是又累又耗时间。而且中间Node.js还发布了v4.0.0版本，一下子没动力了有木有，人家v4.0.0都发布了，我还分析v0.12.7干吗？于是便在这段时间写了两篇自我感觉良好的小文，奈何文笔太差，完全没人看。倍受打击之余，默默的在多看上买了一套《诺贝尔文学奖作品典藏书系（共28册）》，至今还躺在书架上供每日瞻仰使用。还是多写技术文">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-11-06-the-big-pit-behind-nodejs-hello-world-2/270064-db74aab5708e6432.png">
+<meta property="og:image" content="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-11-06-the-big-pit-behind-nodejs-hello-world-2/270064-9977ef7f964dca99.png">
+<meta property="og:image" content="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-11-06-the-big-pit-behind-nodejs-hello-world-2/270064-50dbaa3641fdaf4c.png">
+<meta property="og:image" content="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-11-06-the-big-pit-behind-nodejs-hello-world-2/270064-c6f25e4c0d9564a3.png">
+<meta property="article:published_time" content="2015-11-06T07:34:01.000Z">
+<meta property="article:modified_time" content="2020-03-20T13:09:26.924Z">
+<meta property="article:author" content="Guo Wensheng">
+<meta property="article:tag" content="Node.js">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-11-06-the-big-pit-behind-nodejs-hello-world-2/270064-db74aab5708e6432.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Venson" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="Venson" rel="home"> Venson </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">When you can’t find the sunshine, be the sunshine.</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">Home</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">Archives</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">Categories</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">Tags</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">About</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-2015-11-06-the-big-pit-behind-nodejs-hello-world-2" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Node.js之HelloWorld背后的大坑2
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/posts/2015-11-06-the-big-pit-behind-nodejs-hello-world-2/" class="article-date">
+	  <time datetime="2015-11-06T07:34:01.000Z" itemprop="datePublished">November 6, 2015</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="填坑"><a href="#填坑" class="headerlink" title="填坑"></a>填坑</h1><hr>
+<a href="/posts/2015-08-21-the-big-pit-behind-nodejs-hello-world/" title="上一篇文章">上一篇文章</a>留了个扣子，本来不想继续写的，因为这样写实在是又累又耗时间。而且中间Node.js还发布了v4.0.0版本，一下子没动力了有木有，人家v4.0.0都发布了，我还分析v0.12.7干吗？于是便在这段时间写了两篇自我感觉良好的小文，奈何文笔太差，完全没人看。倍受打击之余，默默的在多看上买了一套《诺贝尔文学奖作品典藏书系（共28册）》，至今还躺在书架上供每日瞻仰使用。还是多写技术文章吧，于是便回来继续填坑。
+
+<p>新版本出了并不代表老版本就没有价值了，我想只有充分了解了老版本才能更好的体会新版本，于是乎欣然继续分析v0.12.7。温习一下git命令，大神略过。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git checkout v0.12.7</span><br></pre></td></tr></table></figure>
+
+<h1 id="想说Hello不容易"><a href="#想说Hello不容易" class="headerlink" title="想说Hello不容易"></a>想说Hello不容易</h1><hr>
+<p>上回书说到，Node.js已经摆好姿势，“’Hello World”已经含在嘴里，伺机待发，但是有句歌词是这么唱的“让我怎么说出口……”，充分体现了这种状态，真是不简单。看了代码之后，充分被Node.js秀了一把继承和异步，一个乱字已然无法形容，所以必须先做几点温馨提示。</p>
+<ul>
+<li>首先最好先重新温习一下网络方面的知识，百度一下TCP/IP、HTTP、Socket、Stream，随便翻翻前几页，有个大概了解就行，要不有些东西真的理解不了。</li>
+<li>其次要了解一下相关类的继承关系，撇开多继承，这种程度的继承关系在Java里不算复杂，在IDE里也非常容易查看，但是放到JavaScript里只能用一坨来形容，不梳理出来一定会陷入其中。</li>
+</ul>
+<p><img src="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-11-06-the-big-pit-behind-nodejs-hello-world-2/270064-db74aab5708e6432.png" alt="Stream Inheritance"></p>
+<ul>
+<li>然后一定要按照之前提到的方法，把V8和Debug日志全部打开，对比日志<strong>逐行分析</strong>代码，这样分析起来会事半功倍。</li>
+<li>最后就是去触发一下程序，毕竟人家已经listen了这么久。这里不推荐浏览器，因为在地址栏里直接输入请求地址会有个问题，浏览器会默认先请求<code>favicon.ico</code>，这样日志里会出现大量的干扰，不利于分析。我在这里被坑了半天之后，不由哼出了周董的旋律，“快使用命令行！轻松！愉快！”</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% curl http:&#x2F;&#x2F;127.0.0.1:1337&#x2F;</span><br></pre></td></tr></table></figure>
+
+<h1 id="SayHello"><a href="#SayHello" class="headerlink" title="SayHello"></a>SayHello</h1><hr>
+<h4 id="连接过程"><a href="#连接过程" class="headerlink" title="连接过程"></a>连接过程</h4><p><img src="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-11-06-the-big-pit-behind-nodejs-hello-world-2/270064-9977ef7f964dca99.png" alt="SayHello1"></p>
+<p>图中有一个细节需要注意，左上角的第一个调用是空心箭头<code>-&gt;</code>，这代表了异步调用，我们真正开始接触异步代码了。等等，为什么<code>EventEmitter.emit()</code>是普通的实心箭头？没错，他确实只是一个同步调用。我一直以为他是一个Node.js经典的异步操作，OMG，我居然被自己骗了这么长时间。以我目前阅读的代码和日志来看，好像只有<code>libuv</code>和<code>process.nextTick()</code>发起的调用是异步的，特此说明。</p>
+<p>代码是如何从<code>libuv</code>到C++再到Node.js的呢？</p>
+<ul>
+<li><code>tcp_wrap.cc</code>中有如下代码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">void TCPWrap::Initialize(Handle&lt;Object&gt; target,</span><br><span class="line">                         Handle&lt;Value&gt; unused,</span><br><span class="line">                         Handle&lt;Context&gt; context) &#123;</span><br><span class="line">...</span><br><span class="line">  t-&gt;InstanceTemplate()-&gt;Set(String::NewFromUtf8(env-&gt;isolate(),</span><br><span class="line">                                                 &quot;onconnection&quot;),</span><br><span class="line">                             Null(env-&gt;isolate()));</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">void TCPWrap::Listen(const FunctionCallbackInfo&lt;Value&gt;&amp; args) &#123;</span><br><span class="line">...</span><br><span class="line">  int err &#x3D; uv_listen(reinterpret_cast&lt;uv_stream_t*&gt;(&amp;wrap-&gt;handle_),</span><br><span class="line">                      backlog,</span><br><span class="line">                      OnConnection);</span><br><span class="line">  args.GetReturnValue().Set(err);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">void TCPWrap::OnConnection(uv_stream_t* handle, int status) &#123;</span><br><span class="line">  ...</span><br><span class="line">  tcp_wrap-&gt;MakeCallback(env-&gt;onconnection_string(), ARRAY_SIZE(argv), argv);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>env.h</code>中有如下代码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#define PER_ISOLATE_STRING_PROPERTIES(V)                                      \</span><br><span class="line">...</span><br><span class="line">  V(onconnection_string, &quot;onconnection&quot;)                                      \</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>net.js</code>中有如下代码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Server.prototype._listen2 &#x3D; function(address, port, addressType, backlog, fd) &#123;</span><br><span class="line">...</span><br><span class="line">  self._handle.onconnection &#x3D; onconnection;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function onconnection(err, clientHandle) &#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>简单说就是<code>tcp_wrap.cc</code>在用V8定义JS对象<code>TCP</code>的时候定义了<code>onconnection</code>属性，并且在调用<code>uv_listen</code>的时候设置了<code>OnConnection</code>回调，而在<code>OnConnection</code>的最后会调用<code>onconnection</code>属性所设置的方法，最后<code>net.js</code>设置了这个属性为<code>onconnection</code>方法。</p>
+<h4 id="请求处理响应过程"><a href="#请求处理响应过程" class="headerlink" title="请求处理响应过程"></a>请求处理响应过程</h4><p><img src="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-11-06-the-big-pit-behind-nodejs-hello-world-2/270064-50dbaa3641fdaf4c.png" alt="SayHello2-1"></p>
+<p><img src="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-11-06-the-big-pit-behind-nodejs-hello-world-2/270064-c6f25e4c0d9564a3.png" alt="SayHello2-2"></p>
+<p>图中小人形状代表第三方库<code>deps/uv</code>和<code>deps/http_parser</code>。图SayHello2-1和图SayHello2-2其实是一次同步顺序调用，画不开了才分成两个，也就是说图SayHello2-1右边的小人和图SayHello2-2左边的小人其实是一个人。</p>
+<p>仔细看，<code>http_parser</code>竟然是个同步库，再一次纠正了我先入为主的认识——Node.js全身都是异步的。Node.js以异步闻名于江湖没错，但是要加上个主语——I/O，<strong>异步I/O</strong>才是其必杀技。回想一下跟他过招的这么长时间里，好像确实是异步多发于I/O。</p>
+<p>看了这两张图，欣喜的发现，“Hello World”终于脱口而出了，可喜可贺~</p>
+<h4 id="善后过程"><a href="#善后过程" class="headerlink" title="善后过程"></a>善后过程</h4><p>此时并没有完，如果将时间静止于此，命令行里应该已经显示出了“Hello world”，但是程序还没有退出。后面还要干什么呢，大概跟吃完饭要刷碗，说完话嘴不能一直张着类似。再次恢复时间的流动，又会哗哗哗的输出一大堆日志，仔细查看可知，其实是在还前面的债，统统的异步回调。前面的时序图基本都忽略了异步调用，是故意的，因为实在没有找到办法和地方把他们画出来。</p>
+<p>还好剩下的东西不多了，而且也有一些窍门。重新查看前面两个流程的代码，把C++中调用<code>uv_xxx</code>并且设置了回调的方法记下来，把JS中<code>process.nextTick()</code>的调用记下来。V8的日志中一段完整的调用总是有以下形式。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1: xxx &#123;</span><br><span class="line">2:   xxx &#123; </span><br><span class="line">3:     xxx &#123;</span><br><span class="line">.</span><br><span class="line">.</span><br><span class="line">.</span><br><span class="line">3:     &#125; -&gt; xxx</span><br><span class="line">2:   &#125; -&gt; xxx</span><br><span class="line">1: &#125; -&gt; xxx</span><br></pre></td></tr></table></figure>
+
+<p>所以把前面记录下来的方法调用和V8日志里为<code>1:</code>的段落进行对比，肯定能一一对上的，这里就不详细说明了。但是V8日志我没有收集全，最后面一段莫名其妙的就没了，不知道为什么。</p>
+<h1 id="回顾"><a href="#回顾" class="headerlink" title="回顾"></a>回顾</h1><hr>
+<p>回想源码分析过程，异常痛苦，只是用着<a href="http://www.sublimetext.com/" target="_blank" rel="noopener"><em>Sublime Text</em></a>的基本功能，翻来翻去，跳来跳去，虽然他的基本功能已经很强大了，但是还是感觉效率低下。“工欲善其事必先利其器”，还是应该把环境弄得高效趁手一些。工具放一边，其实不能随心所欲Debug源码才是硬伤，否则就不用假装有时间机器了，也许是被Java宠坏了，落差巨大。不过我想Node.js的核心开发人员不可能像我这么费劲，所以这方面还需要进一步了解。虽然重新认识了Node.js的异步，初步了解了其幕后英雄libuv和V8的机制，体系结构更加清晰明了，但是底层细节还是需要深入研究。</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/" rel="tag">Node.js</a></li></ul>
+
+      
+        
+	<div id="comment">
+		<!-- 来必力City版安装代码 -->
+		<div id="lv-container" data-id="city" data-uid="MTAyMC8yOTQ4MS82MDQ5">
+		<script type="text/javascript">
+		   (function(d, s) {
+		       var j, e = d.getElementsByTagName(s)[0];
+
+		       if (typeof LivereTower === 'function') { return; }
+
+		       j = d.createElement(s);
+		       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+		       j.async = true;
+
+		       e.parentNode.insertBefore(j, e);
+		   })(document, 'script');
+		</script>
+		<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+		</div>
+		<!-- City版安装代码已完成 -->
+	</div>
+
+
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/posts/2015-12-16-how-to-elegantly-turn-over-the-wall-with-docker/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Docker之如何优雅的翻墙
+        
+      </div>
+    </a>
+  
+  
+    <a href="/posts/2015-10-20-why-work-hard/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">为什么努力工作？</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#填坑"><span class="nav-number">1.</span> <span class="nav-text">填坑</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#想说Hello不容易"><span class="nav-number">2.</span> <span class="nav-text">想说Hello不容易</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SayHello"><span class="nav-number">3.</span> <span class="nav-text">SayHello</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#连接过程"><span class="nav-number">3.0.0.1.</span> <span class="nav-text">连接过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求处理响应过程"><span class="nav-number">3.0.0.2.</span> <span class="nav-text">请求处理响应过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#善后过程"><span class="nav-number">3.0.0.3.</span> <span class="nav-text">善后过程</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#回顾"><span class="nav-number">4.</span> <span class="nav-text">回顾</span></a></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2020 Venson All Rights Reserved.
+        
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次  
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>

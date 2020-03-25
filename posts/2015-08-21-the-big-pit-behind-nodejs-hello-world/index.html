@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Node.js之HelloWorld背后的大坑 | Venson</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Node.js" />
+  
+  
+  
+  
+  <meta name="description" content="入坑    先贴一段代码，再熟悉不过，她默默的待在Node.js官方首页上已经不知多长时间，迎接着初入Node.js世界的程序员们，所有人都认识她，但并非所有人都了解她，甚至很多人都没有想过要去了解她。  var http &#x3D; require(&#39;http&#39;); http.createServer(function (req, res) {   res.writeHead(200, {&#39;Conten">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Node.js之HelloWorld背后的大坑">
+<meta property="og:url" content="http://guowensheng.com/posts/2015-08-21-the-big-pit-behind-nodejs-hello-world/index.html">
+<meta property="og:site_name" content="Venson">
+<meta property="og:description" content="入坑    先贴一段代码，再熟悉不过，她默默的待在Node.js官方首页上已经不知多长时间，迎接着初入Node.js世界的程序员们，所有人都认识她，但并非所有人都了解她，甚至很多人都没有想过要去了解她。  var http &#x3D; require(&#39;http&#39;); http.createServer(function (req, res) {   res.writeHead(200, {&#39;Conten">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-08-21-the-big-pit-behind-nodejs-hello-world/270064-223f568f00926ecd.png">
+<meta property="og:image" content="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-08-21-the-big-pit-behind-nodejs-hello-world/270064-35804ebf8addbe9f.png">
+<meta property="og:image" content="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-08-21-the-big-pit-behind-nodejs-hello-world/270064-edbf9b53812f0433.png">
+<meta property="og:image" content="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-08-21-the-big-pit-behind-nodejs-hello-world/270064-9170d92558870ee2.png">
+<meta property="article:published_time" content="2015-08-21T09:08:07.000Z">
+<meta property="article:modified_time" content="2020-03-20T13:09:26.924Z">
+<meta property="article:author" content="Guo Wensheng">
+<meta property="article:tag" content="Node.js">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-08-21-the-big-pit-behind-nodejs-hello-world/270064-223f568f00926ecd.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Venson" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="Venson" rel="home"> Venson </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">When you can’t find the sunshine, be the sunshine.</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">Home</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">Archives</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">Categories</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">Tags</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">About</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-2015-08-21-the-big-pit-behind-nodejs-hello-world" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Node.js之HelloWorld背后的大坑
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/posts/2015-08-21-the-big-pit-behind-nodejs-hello-world/" class="article-date">
+	  <time datetime="2015-08-21T09:08:07.000Z" itemprop="datePublished">August 21, 2015</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="入坑"><a href="#入坑" class="headerlink" title="入坑"></a>入坑</h1><hr>
+<p>先贴一段代码，再熟悉不过，她默默的待在Node.js官方首页上已经不知多长时间，迎接着初入Node.js世界的程序员们，所有人都认识她，但并非所有人都了解她，甚至很多人都没有想过要去了解她。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var http &#x3D; require(&#39;http&#39;);</span><br><span class="line">http.createServer(function (req, res) &#123;</span><br><span class="line">  res.writeHead(200, &#123;&#39;Content-Type&#39;: &#39;text&#x2F;plain&#39;&#125;);</span><br><span class="line">  res.end(&#39;Hello World\n&#39;);</span><br><span class="line">&#125;).listen(1337, &#39;127.0.0.1&#39;);</span><br><span class="line">console.log(&#39;Server running at http:&#x2F;&#x2F;127.0.0.1:1337&#x2F;&#39;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% node example.js</span><br><span class="line">Server running at http:&#x2F;&#x2F;127.0.0.1:1337&#x2F;</span><br></pre></td></tr></table></figure>
+<p>我也是很多认识但不了解她的人们的其中之一，为什么我会想要去了解她呢，其实事情是这样的。之前用PM2设置集群的时候很容易，一条命令就搞定了，当时感觉很神奇，于是便看了下官网上关于集群的文档，但是Sample代码实在非常怪异，完全不是正常的思路，便越发想了解一下Node.js的集群机制到底是如何实现的，看源码吧，遂入坑，卒！先看<code>cluster.js</code>，然后看<code>child_process.js</code>，最后看<code>net.js</code>，为什么最后是<code>net.js</code>，因为实在看不下去了，各种异步，东一榔头西一棒子，完全理不清头绪。总结一下失败原因，首先并不了解Node.js代码结构、实现方式和内部机制，不适应异步逻辑，一直以顺序的思路去看代码，导致很多地方看不明白。其次对JavaScript其实并不熟悉，尤其这种大型项目，一些高级特性的使用，所谓的对象和继承等等，相比自己之前写的那些业务代码，完全不属于一个次元。然后就是轻敌，单枪匹马杀入乱军之中，没有赵子龙那样的本事，不卒才怪。于是痛定思痛，还是从头开始学吧！</p>
+<h1 id="体系架构"><a href="#体系架构" class="headerlink" title="体系架构"></a>体系架构</h1><hr>
+<p>Node.js主要分为四大部分，Node Standard Library，Node Bindings，V8，Libuv，架构图如下。<br><img src="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-08-21-the-big-pit-behind-nodejs-hello-world/270064-223f568f00926ecd.png" alt="Node.js Structure Overview"></p>
+<ul>
+<li>Node Standard Library 是我们每天都在用的标准库，如<code>require(&#39;http&#39;)</code>，官方的API文档说的就是他。</li>
+<li>Node Bindings 是沟通上下层的桥梁，封装V8和Libuv的细节，向上层提供基础功能。</li>
+<li>V8 是Google开发的JavaScript引擎，提供JavaScript运行环境，可以说没有他就没有Node.js。</li>
+<li>Libuv 是专门为Node.js开发的一个封装库，提供跨平台的异步I/O能力。</li>
+</ul>
+<h1 id="代码结构"><a href="#代码结构" class="headerlink" title="代码结构"></a>代码结构</h1><hr>
+<p>以下是代码的简易结构，已经囊括了Node.js的四大部分，对于入门来说已经足够了，并且本文分析的绝大部分代码都在lib和src下面。另外，本文是基于v0.12.7版本进行的代码分析，网上也有一些老版本的分析，好像完全说的不是一回事，由于一时没注意带来了很多困扰，特此说明。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node   </span><br><span class="line">├─deps</span><br><span class="line">│   ├─uv</span><br><span class="line">│   └─v8</span><br><span class="line">├─lib (Node Standard Library)</span><br><span class="line">└─src (Node Bindings)</span><br></pre></td></tr></table></figure>
+
+<h1 id="特别声明"><a href="#特别声明" class="headerlink" title="特别声明"></a>特别声明</h1><hr>
+<p>后文只着重描述了看代码的思路，并没有进行过多的说明，一是表达能力有限，二是感觉任何的说明都显得苍白无力，所以光看文章不看代码是不行的！</p>
+<p>下面以Linus Torvalds的一句名言来开启Node.js的源码之旅。</p>
+<blockquote>
+<p>Talk is cheap, show me the code.</p>
+</blockquote>
+<p>Let’s go！</p>
+<h1 id="起步停车"><a href="#起步停车" class="headerlink" title="起步停车"></a>起步停车</h1><hr>
+<p>本来我刚开始分析的是第二句代码<code>http.createServer(...).listen(...);</code>，因为这句最长，一看就是重点嘛，但是分析完之后才发现，在这之前Node.js还做了好多好多事情，这才只是冰山一角，还是需要从真正的起跑线开始。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% node example.js</span><br></pre></td></tr></table></figure>
+<p>这句话有啥可分析的，一开始确实是这样想的，本来认为可以轻松越过的，谁知道刚起步就停了下来，真的没有那么简单，如下图所示。<br><img src="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-08-21-the-big-pit-behind-nodejs-hello-world/270064-35804ebf8addbe9f.png" alt="Node.js Startup"><br>首先声明这不是正规的时序图，只是为了更好的理解代码才画成了时序图的样子，来描述整个代码的调用过程。上图描述了从<code>command line</code>到进入<code>example.js</code>之前的程序调用过程，属于整个HelloWorld程序的起步阶段。要想了解进入主程序之前Node.js都干了什么，细读这部分代码就可以了，尤其是<code>node.cc</code>、<code>node.js</code>和<code>module.js</code>。其中<code>node_Contextify.cc</code>中有很多关于V8的调用，暂时不在本文的讨论范围，有兴趣的可以了解一下。</p>
+<h1 id="Node-Bindings"><a href="#Node-Bindings" class="headerlink" title="Node Bindings"></a>Node Bindings</h1><hr>
+<p>其实上一节还留有一个疑点，上图右边第三个<code>Script</code>是怎么来的，是如何与C++代码联系上的？接着看代码！</p>
+<ul>
+<li><code>vm.js</code>中有如下调用，<code>process.binding</code>干了什么？</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var binding &#x3D; process.binding(&#39;contextify&#39;);</span><br><span class="line">var Script &#x3D; binding.ContextifyScript;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>node.cc</code>的<code>SetupProcessObject</code>中有如下设置，将<code>process.binding</code>与<code>Binding</code>进行绑定，<code>Binding</code>干了什么？</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">NODE_SET_METHOD(process, &quot;binding&quot;, Binding);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>node.cc</code>的<code>Binding</code>中有如下调用，对模块进行注册，<code>nm_context_register_func</code>干了什么？</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mod-&gt;nm_context_register_func(exports, unused, env-&gt;context(), mod-&gt;nm_priv);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>node.h</code>中对<code>mod</code>的类型<code>node_module</code>有如下定义，往下看！</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">struct node_module &#123;</span><br><span class="line">  int nm_version;</span><br><span class="line">  unsigned int nm_flags;</span><br><span class="line">  void* nm_dso_handle;</span><br><span class="line">  const char* nm_filename;</span><br><span class="line">  node::addon_register_func nm_register_func;</span><br><span class="line">  node::addon_context_register_func nm_context_register_func;</span><br><span class="line">  const char* nm_modname;</span><br><span class="line">  void* nm_priv;</span><br><span class="line">  struct node_module* nm_link;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>node.h</code>中还有如下宏定义，接着往下看！</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#define NODE_MODULE_CONTEXT_AWARE_X(modname, regfunc, priv, flags)    \</span><br><span class="line">  extern &quot;C&quot; &#123;                                                        \</span><br><span class="line">    static node::node_module _module &#x3D;                                \</span><br><span class="line">    &#123;                                                                 \</span><br><span class="line">      NODE_MODULE_VERSION,                                            \</span><br><span class="line">      flags,                                                          \</span><br><span class="line">      NULL,                                                           \</span><br><span class="line">      __FILE__,                                                       \</span><br><span class="line">      NULL,                                                           \</span><br><span class="line">      (node::addon_context_register_func) (regfunc),                  \</span><br><span class="line">      NODE_STRINGIFY(modname),                                        \</span><br><span class="line">      priv,                                                           \</span><br><span class="line">      NULL                                                            \</span><br><span class="line">    &#125;;                                                                \</span><br><span class="line">    NODE_C_CTOR(_register_ ## modname) &#123;                              \</span><br><span class="line">      node_module_register(&amp;_module);                                 \</span><br><span class="line">    &#125;                                                                 \</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">#define NODE_MODULE_CONTEXT_AWARE_BUILTIN(modname, regfunc)           \</span><br><span class="line">  NODE_MODULE_CONTEXT_AWARE_X(modname, regfunc, NULL, NM_F_BUILTIN)   \</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>node_contextify.cc</code>中有如下宏调用，终于看清楚了！结合前面几点，实际上就是把<code>node_module</code>的<code>nm_context_register_func</code>与<code>node::InitContextify</code>进行了绑定。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">NODE_MODULE_CONTEXT_AWARE_BUILTIN(contextify, node::InitContextify);</span><br></pre></td></tr></table></figure>
+
+<p>兜了这么大一个圈子，省略去中间步骤，代码对应如下，Node.js就是如此完成了Node Bindings。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">process.binding(&#39;contextify&#39;); </span><br><span class="line">↓↓↓</span><br><span class="line">NODE_MODULE_CONTEXT_AWARE_BUILTIN(contextify, node::InitContextify);</span><br></pre></td></tr></table></figure>
+
+<h1 id="步入正轨一"><a href="#步入正轨一" class="headerlink" title="步入正轨一"></a>步入正轨一</h1><hr>
+<p>说了这么多终于到第一句代码了，再不到就要放弃了，赶快来看看吧。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var http &#x3D; require(&#39;http&#39;);</span><br></pre></td></tr></table></figure>
+
+<p><code>require</code>是怎么来的，为什么平白无故就能用呢，实际上都干了些什么？</p>
+<ul>
+<li><code>module.js</code>的<code>_compile</code>中有如下代码。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var self &#x3D; this;</span><br><span class="line">...</span><br><span class="line">function require(path) &#123;</span><br><span class="line">  return self.require(path);</span><br><span class="line">&#125;</span><br><span class="line">...</span><br><span class="line">var wrapper &#x3D; Module.wrap(content);</span><br><span class="line">...</span><br><span class="line">var compiledWrapper &#x3D; runInThisContext(wrapper, &#123; filename: filename &#125;);</span><br><span class="line">...</span><br><span class="line">var args &#x3D; [self.exports, require, self, filename, dirname];</span><br><span class="line">return compiledWrapper.apply(self.exports, args);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>Module</code>的<code>require</code>有如下定义。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Module.prototype.require &#x3D; function(path) &#123;</span><br><span class="line">  assert(path, &#39;missing path&#39;);</span><br><span class="line">  assert(util.isString(path), &#39;path must be a string&#39;);</span><br><span class="line">  return Module._load(path, this);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>Module</code>的<code>wrap</code>有如下定义。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Module.wrap &#x3D; NativeModule.wrap;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>node.js</code>中<code>NavtiveModule</code>有如下定义。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">NativeModule.wrap &#x3D; function(script) &#123;</span><br><span class="line">  return NativeModule.wrapper[0] + script + NativeModule.wrapper[1];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">NativeModule.wrapper &#x3D; [</span><br><span class="line">  &#39;(function (exports, require, module, __filename, __dirname) &#123; &#39;,</span><br><span class="line">  &#39;\n&#125;);&#39;</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+
+<p>不用多解释了，代码已经说明了一切。</p>
+<h1 id="步入正轨二"><a href="#步入正轨二" class="headerlink" title="步入正轨二"></a>步入正轨二</h1><hr>
+<p>正餐开始，不过感觉前面的开胃菜似乎有点多……</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http.createServer(function (req, res) &#123;</span><br><span class="line">  res.writeHead(200, &#123;&#39;Content-Type&#39;: &#39;text&#x2F;plain&#39;&#125;);</span><br><span class="line">  res.end(&#39;Hello World\n&#39;);</span><br><span class="line">&#125;).listen(1337, &#39;127.0.0.1&#39;);</span><br></pre></td></tr></table></figure>
+
+<p>一如既往，看图说话。</p>
+<ul>
+<li>首先了解一下HTTP Server的继承关系，有利于更好的理解代码。</li>
+</ul>
+<p><img src="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-08-21-the-big-pit-behind-nodejs-hello-world/270064-edbf9b53812f0433.png" alt="HTTP Server  Inheritance"></p>
+<ul>
+<li>然后就是HTTP Server的工作流程。</li>
+</ul>
+<p><img src="http://venson-blog-images.oss-cn-beijing.aliyuncs.com/2015-08-21-the-big-pit-behind-nodejs-hello-world/270064-9170d92558870ee2.png" alt="HTTP Server Workflow"></p>
+<p>通过上图可以看出，绝大部分逻辑都在<code>net.js</code>中，细读这部分代码可以更好的了解其工作原理。其中<code>tcp_warp.cc</code>中有很多关于Libuv的调用，暂时不在本文的讨论范围，有兴趣的可以了解一下。</p>
+<h1 id="步入正轨三"><a href="#步入正轨三" class="headerlink" title="步入正轨三"></a>步入正轨三</h1><hr>
+<p>最后一句了，挺住！</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">console.log(&#39;Server running at http:&#x2F;&#x2F;127.0.0.1:1337&#x2F;&#39;);</span><br></pre></td></tr></table></figure>
+
+<p><code>console</code>和<code>require</code>还不一样，不是以参数的形式传进来的，这就要说到<code>global</code>对象了，Node.js的顶层对象。官方文档已经有了相关的说明，在这就不多做解释，重点看看他是怎么来的。</p>
+<ul>
+<li><code>node.js</code>中有如下定义，这个<code>this</code>到底是谁？</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">this.global &#x3D; this;</span><br><span class="line">...</span><br><span class="line">startup.globalVariables &#x3D; function() &#123;</span><br><span class="line">  global.process &#x3D; process;</span><br><span class="line">  global.global &#x3D; global;</span><br><span class="line">  global.GLOBAL &#x3D; global;</span><br><span class="line">  global.root &#x3D; global;</span><br><span class="line">  global.Buffer &#x3D; NativeModule.require(&#39;buffer&#39;).Buffer;</span><br><span class="line">  process.domain &#x3D; null;</span><br><span class="line">  process._exiting &#x3D; false;</span><br><span class="line">&#125;;</span><br><span class="line">...</span><br><span class="line">startup.globalConsole &#x3D; function() &#123;</span><br><span class="line">  global.__defineGetter__(&#39;console&#39;, function() &#123;</span><br><span class="line">    return NativeModule.require(&#39;console&#39;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>node.cc</code>中的<code>LoadEnvironment</code>有如下定义，<code>f</code>代表<code>node.js</code>所形成的方法，<code>Call</code>跟JavaScript中的<code>Function.prototype.call</code>是一个意思，也就是说<code>f</code>中的<code>this</code>指向的就是<code>global</code>。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Local&lt;Object&gt; global &#x3D; env-&gt;context()-&gt;Global();</span><br><span class="line">Local&lt;Value&gt; arg &#x3D; env-&gt;process_object();</span><br><span class="line">f-&gt;Call(global, 1, &amp;arg);</span><br></pre></td></tr></table></figure>
+
+<p>这样<code>console</code>作为全局变量的身份也就真相大白了。</p>
+<h1 id="大功告成？"><a href="#大功告成？" class="headerlink" title="大功告成？"></a>大功告成？</h1><hr>
+<p>所有代码都分析完了，“Hello World”这两个字竟然还没有出现！？<br>这是段服务端程序，没有请求，哪来的应答！？<br>哎，你要是长这样该多好……</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">console.log(&#39;Hello World&#39;);</span><br></pre></td></tr></table></figure>
+
+<p>即使没完，也准备告一段落了。给有缘人一个探索的空间？No！No！No！累了，需要恢复元气！<br>如果确实非常想知道后事如何，那便在此留下一些线索，以供参考。</p>
+<p>其实在看代码的过程中，Server响应请求的过程更加令人匪夷所思，卡了好久，还好找到了比较好的办法才算弄清楚，那就是看！日！志！其实看日志根本不算什么办法，地球人都知道，但是怎么让日志打出来，还真费了半天功夫，反正百度上是没找到。</p>
+<ul>
+<li>V8日志</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% node --trace example.js</span><br></pre></td></tr></table></figure>
+<ul>
+<li>源码Debug日志</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% NODE_DEBUG&#x3D;HTTP,STREAM,MODULE,NET node example.js</span><br></pre></td></tr></table></figure>
+
+<p>关于V8的一些参数可以通过<code>node --v8-options</code>查看，<code>--trace</code>的作用是输出方法调用过程。源码Debug日志的原理可以查看<code>util.js</code>的<code>debuglog</code>方法。这些日志都比较长，最好输出到文件中以便反复查看。</p>
+<h1 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h1><hr>
+<p>别总以为什么都知道，其实可能连最基本的都不知道！<br>知道的越多，就越觉得无知！<br>唯有学习！</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/" rel="tag">Node.js</a></li></ul>
+
+      
+        
+	<div id="comment">
+		<!-- 来必力City版安装代码 -->
+		<div id="lv-container" data-id="city" data-uid="MTAyMC8yOTQ4MS82MDQ5">
+		<script type="text/javascript">
+		   (function(d, s) {
+		       var j, e = d.getElementsByTagName(s)[0];
+
+		       if (typeof LivereTower === 'function') { return; }
+
+		       j = d.createElement(s);
+		       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+		       j.async = true;
+
+		       e.parentNode.insertBefore(j, e);
+		   })(document, 'script');
+		</script>
+		<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+		</div>
+		<!-- City版安装代码已完成 -->
+	</div>
+
+
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/posts/2015-09-06-which-dimension-do-you-live-in/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          你活在几维？
+        
+      </div>
+    </a>
+  
+  
+    <a href="/posts/2015-04-08-saving-private-es/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Saving Private ES</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#入坑"><span class="nav-number">1.</span> <span class="nav-text">入坑</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#体系架构"><span class="nav-number">2.</span> <span class="nav-text">体系架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码结构"><span class="nav-number">3.</span> <span class="nav-text">代码结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#特别声明"><span class="nav-number">4.</span> <span class="nav-text">特别声明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#起步停车"><span class="nav-number">5.</span> <span class="nav-text">起步停车</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Node-Bindings"><span class="nav-number">6.</span> <span class="nav-text">Node Bindings</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#步入正轨一"><span class="nav-number">7.</span> <span class="nav-text">步入正轨一</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#步入正轨二"><span class="nav-number">8.</span> <span class="nav-text">步入正轨二</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#步入正轨三"><span class="nav-number">9.</span> <span class="nav-text">步入正轨三</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#大功告成？"><span class="nav-number">10.</span> <span class="nav-text">大功告成？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#感想"><span class="nav-number">11.</span> <span class="nav-text">感想</span></a></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2020 Venson All Rights Reserved.
+        
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次  
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>

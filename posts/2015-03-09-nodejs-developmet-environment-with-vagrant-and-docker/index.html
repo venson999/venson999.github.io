@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Node.js developmet environment with Vagrant and Docker | Venson</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Node.jsDockerVagrant" />
+  
+  
+  
+  
+  <meta name="description" content="起因     * 平时用到的技术比较杂，java，node.js，python等，在一台机器上配置众多环境，导致本地环境混乱，技术切换总要瞻前顾后。  * 每一种技术的环境配置都比较繁琐，时间长了容易忘记，即使做了完善的记录，重新配置也会比较耗时，对新人不友好。  * 家里用mac，公司用windows，两个系统两套环境同样的工作，环境配置成了负担。  * 一直期望实现一种方式，无论在任何地方，只">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Node.js developmet environment with Vagrant and Docker">
+<meta property="og:url" content="http://guowensheng.com/posts/2015-03-09-nodejs-developmet-environment-with-vagrant-and-docker/index.html">
+<meta property="og:site_name" content="Venson">
+<meta property="og:description" content="起因     * 平时用到的技术比较杂，java，node.js，python等，在一台机器上配置众多环境，导致本地环境混乱，技术切换总要瞻前顾后。  * 每一种技术的环境配置都比较繁琐，时间长了容易忘记，即使做了完善的记录，重新配置也会比较耗时，对新人不友好。  * 家里用mac，公司用windows，两个系统两套环境同样的工作，环境配置成了负担。  * 一直期望实现一种方式，无论在任何地方，只">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-03-19T06:57:52.000Z">
+<meta property="article:modified_time" content="2020-02-27T12:34:13.888Z">
+<meta property="article:author" content="Guo Wensheng">
+<meta property="article:tag" content="Node.js">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Vagrant">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Venson" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="Venson" rel="home"> Venson </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">When you can’t find the sunshine, be the sunshine.</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">Home</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">Archives</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">Categories</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">Tags</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">About</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-2015-03-09-nodejs-developmet-environment-with-vagrant-and-docker" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Node.js developmet environment with Vagrant and Docker
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/posts/2015-03-09-nodejs-developmet-environment-with-vagrant-and-docker/" class="article-date">
+	  <time datetime="2015-03-19T06:57:52.000Z" itemprop="datePublished">March 19, 2015</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><hr>
+<ul>
+<li>平时用到的技术比较杂，java，node.js，python等，在一台机器上配置众多环境，导致本地环境混乱，技术切换总要瞻前顾后。</li>
+<li>每一种技术的环境配置都比较繁琐，时间长了容易忘记，即使做了完善的记录，重新配置也会比较耗时，对新人不友好。</li>
+<li>家里用mac，公司用windows，两个系统两套环境同样的工作，环境配置成了负担。</li>
+<li>一直期望实现一种方式，无论在任何地方，只需敲几行命令，多复杂的应用都能跑起来，修改调试闲庭信步，技术切换波澜不惊，还不污染本地环境。</li>
+<li>Docker现在这么火，怎么能不试试。</li>
+</ul>
+<h1 id="选型"><a href="#选型" class="headerlink" title="选型"></a>选型</h1><hr>
+<p><strong>Vagrant and VM</strong><br>挺久之前朋友推荐Vagrant，当时感觉惊为天人，竟然还可以这样，随即研究了一下，简单实现了在宿主机windows下开发node.js程序，代码通过synced_folder实时同步到虚拟机linux下运行调试。遗憾的是虚拟机linux的环境完全是通过命令手动搭建的，并没有结合Puppet自动完成。其实Vagrant是完全可以实现终极目标的，没有进行下去的原因有三：一是因为要学习Puppet和一些服务器运维知识，当时感觉有点跨领域了。二是因为复杂的多VM的应用会占用比较多的资源，电脑不给力不行。三是因为懒惰！</p>
+<p><strong>Boot2docker</strong><br>本来一开始打算只用Boot2docker实现，因为不想引入额外技术，于是就开始干了。一开始都很顺利，dockerfile，image，container，link，run，应用按部就班的就运行起来了。但这样离终极目标还有一段距离，没有做到out of the box。首先build和run都需要手动执行，其中的一些参数不太好记。fig到是一个现成的解决方案，可是在windows上无法运行。其次目录同步支持的不好，无法提前配置，默认同步c:/User到/c/Users之外，如果想同步其他目录需要在boot2dockerVM里执行mount命令。整个过程需要手动干预过多，对新手不友好，不完美。</p>
+<p><strong>Vagrant and Docker</strong><br>其实网上有很多基于Vagrant的方案，一开始确实不想用，无奈Boot2docker不给力。通过Vagrant主要解决了两个问题，一是可以提前配置同步目录，指定代码实时同步目录，二是可以通过Vagrant配置实现fig的功能。Vagrant和Boot2docker两者都是在VirtualBox的中介linux虚拟机上运行Docker，性能差别应该不大。</p>
+<h1 id="Boot2docker探路"><a href="#Boot2docker探路" class="headerlink" title="Boot2docker探路"></a>Boot2docker探路</h1><hr>
+<p><strong>确定目标</strong><br>要研究一项技术最好的办法是用实际的项目去验证，于是我选了一个2012年用Node.js写的项目es，线上版本最后一次修改是在2013年2月。选择这个项目是因为，长时间没有升级导致技术栈版本比较低，再修改的话环境都不好搭建，而且这个项目是当年刚开始研究Node.js时写的，也算探索的一种延续，再挽救一下这个年迈的伙伴。于是乎把这次探索的目标定为用Docker一键式搭建es的开发环境。</p>
+<p><strong>任务分析</strong><br>es的技术栈是，CentOS 6.3，Node.js 0.6.19，Redis 2.4.15。从DockerHub上看，这几个项目已经找不到这么低版本的镜像了，Node.js可以通过nvm安装老版本，Redis可以通过tar包安装老版本，CentOS没办法只好选择了默认的centos6（当时版本6.6），当然也可以自己做一个6.3的镜像，太麻烦只好先忍了。后面需要做的就是，定义两个dockerfile，一个基于Node.js的app，一个基于Redis的db，构建image，运行container的时候link一下就OK了。</p>
+<p><strong>说干就干</strong><br>db/dockerfile</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM centos:centos6</span><br><span class="line">MAINTAINER guows</span><br><span class="line"></span><br><span class="line">RUN yum -y update</span><br><span class="line">RUN yum -y install gcc tcl</span><br><span class="line"></span><br><span class="line">ADD .&#x2F;redis&#x2F;redis-2.4.15.tar.gz &#x2F;tmp&#x2F;redis-2.4.15.tar.gz</span><br><span class="line">RUN cd &#x2F;tmp&#x2F;redis-2.4.15.tar.gz&#x2F;redis-2.4.15 &amp;&amp; \</span><br><span class="line">	make &amp;&amp; \</span><br><span class="line">	make install</span><br><span class="line"></span><br><span class="line">EXPOSE 6379</span><br><span class="line">CMD [&quot;redis-server&quot;]</span><br></pre></td></tr></table></figure>
+<p>构建镜像</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker build -t es-db .</span><br></pre></td></tr></table></figure>
+<p>运行容器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run --name db -d es-db</span><br></pre></td></tr></table></figure>
+
+<p>在构建db的过程中有几个需要注意的地方：<code>ADD</code>命令如果添加tar文件的话，会自动解压，这个比较令人费解。<code>CMD</code>命令执行的指令必须是前台运行的，否则container启动之后，执行完<code>CMD</code>后面的指令后会自动关闭。在运行容器的时候并没有用参数<code>-p 6379:6379</code>，因为如果用link连接容器的话，是不需要暴露端口的，这样会比较安全。</p>
+<p>app/dockerfile</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM centos:centos6</span><br><span class="line">MAINTAINER guows</span><br><span class="line"></span><br><span class="line">RUN yum -y update</span><br><span class="line">RUN yum -y install tar gcc gcc-c++ openssl-devel</span><br><span class="line"></span><br><span class="line">RUN curl https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;creationix&#x2F;nvm&#x2F;v0.20.0&#x2F;install.sh | bash</span><br><span class="line">RUN source ~&#x2F;.nvm&#x2F;nvm.sh &amp;&amp; \</span><br><span class="line">	nvm install v0.6.19 &amp;&amp; \</span><br><span class="line">	nvm use v0.6.19 &amp;&amp; \</span><br><span class="line">	nvm alias default v0.6.19</span><br><span class="line">RUN ln -s ~&#x2F;.nvm&#x2F;v0.6.19&#x2F;bin&#x2F;node &#x2F;usr&#x2F;bin&#x2F;node &amp;&amp; \</span><br><span class="line">	ln -s ~&#x2F;.nvm&#x2F;v0.6.19&#x2F;bin&#x2F;npm &#x2F;usr&#x2F;bin&#x2F;npm</span><br><span class="line">RUN npm config set ca&#x3D;&quot;&quot;</span><br><span class="line"></span><br><span class="line">RUN mkdir -p &#x2F;usr&#x2F;local&#x2F;es</span><br><span class="line">ADD . &#x2F;usr&#x2F;local&#x2F;es</span><br><span class="line">WORKDIR &#x2F;usr&#x2F;local&#x2F;es</span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line">CMD [&quot;node&quot;, &quot;app.js&quot;]</span><br></pre></td></tr></table></figure>
+<p>构建镜像</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker build -t es-app .</span><br></pre></td></tr></table></figure>
+<p>运行容器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run --name app --link db:db -p 9527:9527 -d es-app</span><br></pre></td></tr></table></figure>
+
+<p>在构建app的过程中有几个需要注意的地方：像<code>nvm install</code>这样会进行长时间的下载、编译和安装的命令，推荐单独放在一个<code>RUN</code>命令里，这样执行完成后会生成中间image进行缓存，方便dockerfile的调试，否则会浪费大量等待的时间。npm版本低，必须设置<code>npm config set ca=&quot;&quot;</code>。app如何知道db的ip和port，由于用了link的方式连接两个容器，Docker会在app里面以<code>&lt;name&gt;_PORT_&lt;port&gt;_&lt;protocol&gt;</code>为前缀生成一些环境变量，这里用到的是<code>DB_PORT_6379_TCP_ADDR</code>和<code>DB_PORT_6379_TCP_PORT</code>，于是在Node.js代码里可以通过<code>process.env[&#39;...&#39;]</code>的方式取得。在宿主机的命令行里用<code>boot2docker ip</code>可以取得boot2dockerVM的ip，然后就可以通过<code>http://192.168.59.103:9527</code>来测试应用了。</p>
+<p><strong>问题</strong><br>截止到目前算是有了一个阶段性成果，但是遇到了一些无法解决的问题，在前面的<strong>选型</strong>中已经提到。现在就好像刚爬上一座山峰，在眺望四周风景的时候发现这根本不是终点，甚至才刚刚开始，于是乎收拾收拾心情，继续爬向更高的山峰。</p>
+<h1 id="Vagrant-and-Docker再启程"><a href="#Vagrant-and-Docker再启程" class="headerlink" title="Vagrant and Docker再启程"></a>Vagrant and Docker再启程</h1><hr>
+<p><strong>确定目标</strong><br>在之前Boot2docker成果的基础上，通过Vagrant实现一键式构建，代码实时同步，开发调试轻松加愉快。</p>
+<p><strong>任务分析</strong><br>这种方式网上已经有不少，这篇<a href="http://blog.zenika.com/index.php?post/2014/10/07/Setting-up-a-development-environment-using-Docker-and-Vagrant" target="_blank" rel="noopener">Setting up a development environment using Docker and Vagrant</a>是我参考最多的。</p>
+<p><strong>照猫画虎</strong><br>tree</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root   </span><br><span class="line">│  DockerHostVagrantfile</span><br><span class="line">│  Vagrantfile</span><br><span class="line">├─app</span><br><span class="line">│   │  Dockerfile</span><br><span class="line">│   └─src</span><br><span class="line">│          app.js</span><br><span class="line">│          package.json</span><br><span class="line">└─db</span><br><span class="line">    │  Dockerfile</span><br><span class="line">    └─redis</span><br><span class="line">           redis-2.4.15.tar.gz</span><br></pre></td></tr></table></figure>
+<p>Vagrantfile</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ENV[&#39;VAGRANT_DEFAULT_PROVIDER&#39;] &#x3D; &#39;docker&#39;</span><br><span class="line">DOCKER_HOST_NAME &#x3D; &quot;dockerhost&quot;</span><br><span class="line">DOCKER_HOST_VAGRANTFILE &#x3D; &quot;.&#x2F;DockerHostVagrantfile&quot;</span><br><span class="line"></span><br><span class="line">Vagrant.configure(&quot;2&quot;) do |config|</span><br><span class="line">  config.vm.define &quot;db&quot; do |a|</span><br><span class="line">    a.vm.provider &quot;docker&quot; do |d|</span><br><span class="line">      d.build_dir &#x3D; &quot;.&#x2F;db&#x2F;&quot;</span><br><span class="line">      d.build_args &#x3D; [&quot;-t&#x3D;es-db&quot;]</span><br><span class="line">      d.name &#x3D; &quot;es-db&quot;</span><br><span class="line">      d.vagrant_machine &#x3D; &quot;#&#123;DOCKER_HOST_NAME&#125;&quot;</span><br><span class="line">      d.vagrant_vagrantfile &#x3D; &quot;#&#123;DOCKER_HOST_VAGRANTFILE&#125;&quot;</span><br><span class="line">    end</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  config.vm.define &quot;app-src&quot; do |a|</span><br><span class="line">    a.vm.provider &quot;docker&quot; do |d|</span><br><span class="line">      d.build_dir &#x3D; &quot;.&#x2F;app&#x2F;&quot;</span><br><span class="line">      d.build_args &#x3D; [&quot;-t&#x3D;es-app&quot;]</span><br><span class="line">      d.name &#x3D; &quot;es-app-src&quot;</span><br><span class="line">      d.volumes &#x3D; [&quot;&#x2F;usr&#x2F;local&#x2F;es-vd&#x2F;app&#x2F;src:&#x2F;usr&#x2F;local&#x2F;es&quot;]</span><br><span class="line">      d.cmd &#x3D; [&quot;npm&quot;, &quot;install&quot;]</span><br><span class="line">      d.remains_running &#x3D; false</span><br><span class="line">      d.vagrant_machine &#x3D; &quot;#&#123;DOCKER_HOST_NAME&#125;&quot;</span><br><span class="line">      d.vagrant_vagrantfile &#x3D; &quot;#&#123;DOCKER_HOST_VAGRANTFILE&#125;&quot;</span><br><span class="line">    end</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  config.vm.define &quot;app&quot; do |a|</span><br><span class="line">    a.vm.provider &quot;docker&quot; do |d|</span><br><span class="line">      d.image &#x3D; &quot;es-app&quot;</span><br><span class="line">      d.create_args &#x3D; [&quot;--volumes-from&#x3D;es-app-src&quot;]</span><br><span class="line">      d.name &#x3D; &quot;es-app&quot;</span><br><span class="line">      d.ports &#x3D; [&quot;9527:9527&quot;]</span><br><span class="line">      d.link(&quot;es-db:db&quot;)</span><br><span class="line">      d.cmd &#x3D; [&quot;node&quot;, &quot;&#x2F;usr&#x2F;local&#x2F;es&#x2F;app.js&quot;]</span><br><span class="line">      d.vagrant_machine &#x3D; &quot;#&#123;DOCKER_HOST_NAME&#125;&quot;</span><br><span class="line">      d.vagrant_vagrantfile &#x3D; &quot;#&#123;DOCKER_HOST_VAGRANTFILE&#125;&quot;</span><br><span class="line">    end</span><br><span class="line">  end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>DockerHostVagrantfile</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Vagrant.configure(&quot;2&quot;) do |config|</span><br><span class="line">  config.vm.provision &quot;docker&quot;</span><br><span class="line">  config.vm.provision &quot;shell&quot;, inline:</span><br><span class="line">    &quot;ps aux | grep &#39;sshd:&#39; | awk &#39;&#123;print $2&#125;&#39; | xargs kill&quot;</span><br><span class="line"></span><br><span class="line">  config.vm.define &quot;dockerhost&quot;</span><br><span class="line">  config.vm.box &#x3D; &quot;ubuntu&#x2F;trusty64&quot;</span><br><span class="line">  config.vm.synced_folder &quot;.&quot;, &quot;&#x2F;vagrant&quot;, disabled: true</span><br><span class="line">  config.vm.synced_folder &quot;.&quot;, &quot;&#x2F;usr&#x2F;local&#x2F;es-vd&quot;</span><br><span class="line">  config.vm.network &quot;forwarded_port&quot;, guest: 9527, host: 9527</span><br><span class="line"></span><br><span class="line">  config.vm.provider :virtualbox do |vb|</span><br><span class="line">    vb.name &#x3D; &quot;dockerhost&quot;</span><br><span class="line">  end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>db/dockerfile</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM centos:centos6</span><br><span class="line">MAINTAINER guows</span><br><span class="line"></span><br><span class="line">RUN yum -y update</span><br><span class="line">RUN yum -y install gcc tcl</span><br><span class="line">ADD .&#x2F;redis&#x2F;redis-2.4.15.tar.gz &#x2F;tmp&#x2F;redis-2.4.15.tar.gz</span><br><span class="line">RUN cd &#x2F;tmp&#x2F;redis-2.4.15.tar.gz&#x2F;redis-2.4.15 &amp;&amp; \</span><br><span class="line">	make &amp;&amp; \</span><br><span class="line">	make install</span><br><span class="line"></span><br><span class="line">EXPOSE 6379</span><br><span class="line">CMD [&quot;redis-server&quot;]</span><br></pre></td></tr></table></figure>
+<p>app/dockerfile</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM centos:centos6</span><br><span class="line">MAINTAINER guows</span><br><span class="line"></span><br><span class="line">RUN yum -y update</span><br><span class="line">RUN yum -y install tar gcc gcc-c++ openssl-devel</span><br><span class="line">RUN curl https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;creationix&#x2F;nvm&#x2F;v0.20.0&#x2F;install.sh | bash</span><br><span class="line">RUN source ~&#x2F;.nvm&#x2F;nvm.sh &amp;&amp; \</span><br><span class="line">	nvm install v0.6.19 &amp;&amp; \</span><br><span class="line">	nvm use v0.6.19 &amp;&amp; \</span><br><span class="line">	nvm alias default v0.6.19</span><br><span class="line">RUN ln -s ~&#x2F;.nvm&#x2F;v0.6.19&#x2F;bin&#x2F;node &#x2F;usr&#x2F;bin&#x2F;node &amp;&amp; \</span><br><span class="line">	ln -s ~&#x2F;.nvm&#x2F;v0.6.19&#x2F;bin&#x2F;npm &#x2F;usr&#x2F;bin&#x2F;npm</span><br><span class="line">RUN npm config set ca&#x3D;&quot;&quot;</span><br><span class="line"></span><br><span class="line">RUN mkdir -p &#x2F;usr&#x2F;local&#x2F;es</span><br><span class="line">WORKDIR &#x2F;usr&#x2F;local&#x2F;es</span><br></pre></td></tr></table></figure>
+
+<p>这里面有一个让我纠结很久的问题，image里面应不应该放代码，因为我要做的是开发环境，代码和依赖都会随时变化，把一些必然会变的东西固化到image里面让人很不爽。代码和依赖不放在image里面的话，就必须从dockerfile里面分离出来，这样就涉及到代码放在哪依赖何时安装的问题。代码还好说，用<code>synced_folder</code>和volume可以搞定。但是依赖何时安装呢？起初想把<code>npm install &amp;&amp; node app.js</code>放在<code>docker run</code>后面，但是不成功，npm好像把后面的内容都当成了参数对待，无法安装。当然可以写一个shell，把好多东西都写在里面，但是这样又赋予了<code>docker run</code>太多的职责，而且每次启动都要重复执行一些命令，感觉与docker的思想相违背。解决这个问题的灵感来自于我之前提到的<a href="http://blog.zenika.com/index.php?post/2014/10/07/Setting-up-a-development-environment-using-Docker-and-Vagrant" target="_blank" rel="noopener">那篇文章</a>和<a href="https://docs.docker.com/userguide/dockervolumes/#creating-and-mounting-a-data-volume-container" target="_blank" rel="noopener">官方文档</a>，首先创建一个名为<code>es-app-src</code>的container专门放置代码和依赖，通过<code>-v</code>同步代码，在此之上执行<code>npm install</code>，把代码和依赖都存在了<code>es-app-src</code>的volume里，再创建一个名为<code>es-app</code>的container通过<code>--volumes-from</code>挂载<code>es-app-src</code>的volume。</p>
+<p>在实际操作过程中遇到三个问题：一是执行<code>vagrant up</code>时需要加上<code>--no-parallel</code>，因为Vagrant默认是并行执行的，但是由于需要<code>--link</code>，也就是说必须db起来了之后才能被app来link，所以必须顺序执行。二是<code>npm install</code>报错<code>Error: UNKNOW , symlink &#39;...&#39;</code>，因为<code>npm install</code>需要做<code>symlink</code>，同时通过<code>synced_folder</code>同步给宿主机，宿主机windows默认情况下是不允许<code>symlink</code>的，需要管理员权限，所以需要以管理员权限启动命令行。网上还有一种修改Vagrant配置的方案，我没有成功。三是由于<code>es-app-src</code>执行完必要的任务就会关闭，所以必须配置<code>remains_running = false</code>来告诉Vagrant这是正常现象，否则会报错。</p>
+<p>通过以上步骤，只需一条<code>vagrant up --no-parallel</code>命令，然后稍作等待（时间取决于网络条件和机器配置），应用从无到有在本地就跑起来了，so easy！</p>
+<p><strong>开发调试</strong><br>应用跑起来还不算完，开发调试怎么办，修改代码需要重启应用，Docker可没有这个功能，最后这一点实现不了，前面一切都是白搭。Node.js有一些第三方的进程管理库可以解决这个问题，能够实时监控代码变化并且实时重启应用，如<a href="https://github.com/foreverjs/forever" target="_blank" rel="noopener">forever</a>、<a href="https://github.com/Unitech/PM2" target="_blank" rel="noopener">PM2</a>、<a href="https://github.com/remy/nodemon" target="_blank" rel="noopener">nodemon</a>，但是只有forever可以支持Node.js 0.6.19，奈何那重启速度实在让人无法直视，谁让咱版本低呢。</p>
+<p>package.json</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&quot;dependencies&quot; : &#123;</span><br><span class="line">  ...</span><br><span class="line">  &quot;forever&quot; : &quot;0.9.2&quot;</span><br><span class="line">&#125;,</span><br><span class="line">&quot;scripts&quot;: &#123;</span><br><span class="line">  &quot;start&quot; : &quot;forever -w app.js&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Vagrantfile</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">config.vm.define &quot;app&quot; do |a|</span><br><span class="line">  a.vm.provider &quot;docker&quot; do |d|</span><br><span class="line">    d.image &#x3D; &quot;es-app&quot;</span><br><span class="line">    d.create_args &#x3D; [&quot;--volumes-from&#x3D;es-app-src&quot;]</span><br><span class="line">    d.name &#x3D; &quot;es-app&quot;</span><br><span class="line">    d.ports &#x3D; [&quot;9527:9527&quot;]</span><br><span class="line">    d.link(&quot;es-db:db&quot;)</span><br><span class="line">    d.cmd &#x3D; [&quot;npm&quot;, &quot;start&quot;]</span><br><span class="line">    d.vagrant_machine &#x3D; &quot;#&#123;DOCKER_HOST_NAME&#125;&quot;</span><br><span class="line">    d.vagrant_vagrantfile &#x3D; &quot;#&#123;DOCKER_HOST_VAGRANTFILE&#125;&quot;</span><br><span class="line">  end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p><strong>问题</strong><br>现在的解决方案也不够完美，Vagrant和Docker配合起来总是有些奇怪的问题，网上资料不多，整个调试过程非常痛苦，而且和Fig相比也明显不够优雅，不过应该已经算是现阶段的最优解了，期待后续改进吧。</p>
+<h1 id="畅想未来"><a href="#畅想未来" class="headerlink" title="畅想未来"></a>畅想未来</h1><hr>
+<p>通过这次实践，对Docker的认识更进一步，算是从认知到入门了吧，着实颠覆了一下我的观念，太方便了，真的可以让开发调试轻松加愉快。而且Docker的能力绝对不止于此，开发、测试、部署、交付等等，软件生命周期的各个阶段都可以找到用武之地，想象空间无限，效率提升无限，期待把他应用到更多的工作场景中去！</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node-js/" rel="tag">Node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vagrant/" rel="tag">Vagrant</a></li></ul>
+
+      
+        
+	<div id="comment">
+		<!-- 来必力City版安装代码 -->
+		<div id="lv-container" data-id="city" data-uid="MTAyMC8yOTQ4MS82MDQ5">
+		<script type="text/javascript">
+		   (function(d, s) {
+		       var j, e = d.getElementsByTagName(s)[0];
+
+		       if (typeof LivereTower === 'function') { return; }
+
+		       j = d.createElement(s);
+		       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+		       j.async = true;
+
+		       e.parentNode.insertBefore(j, e);
+		   })(document, 'script');
+		</script>
+		<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+		</div>
+		<!-- City版安装代码已完成 -->
+	</div>
+
+
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/posts/2015-04-08-saving-private-es/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Saving Private ES
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#起因"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#选型"><span class="nav-number">2.</span> <span class="nav-text">选型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Boot2docker探路"><span class="nav-number">3.</span> <span class="nav-text">Boot2docker探路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Vagrant-and-Docker再启程"><span class="nav-number">4.</span> <span class="nav-text">Vagrant and Docker再启程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#畅想未来"><span class="nav-number">5.</span> <span class="nav-text">畅想未来</span></a></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2020 Venson All Rights Reserved.
+        
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次  
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>
